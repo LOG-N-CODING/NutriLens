@@ -141,6 +141,19 @@ const FoodAnalyze = () => {
     if (stopCommand.includes(input.toLowerCase())) {
       setStopped(true);
       
+      // Show loading alert
+      Swal.fire({
+        title: 'Evaluating...',
+        text: 'Analyzing your daily nutrition data',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        background: '#1a1a2e',
+        color: '#ffffff',
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      
       try {
         const res = await api.post('accounts/evaluate/');
         setEvaluation(res.data);
@@ -156,6 +169,7 @@ const FoodAnalyze = () => {
         
         addMessage('bot', evalText, true, true);
         
+        // Close loading and show success
         Swal.fire({
           title: 'Evaluation Complete!',
           text: `Your daily nutrition score: ${res.data.grade}`,
@@ -167,6 +181,16 @@ const FoodAnalyze = () => {
       } catch (err) {
         console.error('Evaluation failed', err);
         addMessage('bot', 'Failed to evaluate your daily nutrition.', false, true);
+        
+        // Close loading and show error
+        Swal.fire({
+          title: 'Evaluation Failed',
+          text: 'Failed to evaluate your daily nutrition. Please try again.',
+          icon: 'error',
+          background: '#1a1a2e',
+          color: '#ffffff',
+          confirmButtonColor: '#ff4444'
+        });
       }
     } else {
       try {
